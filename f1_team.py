@@ -6,9 +6,9 @@ class Team:
         self.team_color = team_color
         self.points = points
 
-        self.drivers = []
+        self.drivers = [] #Drivers object
         pass
 
-    def add_driver(driver : Driver) -> None:
-        
+    def add_driver(self, driver : Driver) -> None:
+        self.drivers.append(driver)
         pass
