@@ -1,14 +1,15 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-import pandas as pd
-from io import StringIO
-import re
-from tabulate import tabulate
-from datetime import datetime
-
 from f1_settings import *
 from f1_team import Team
 from f1_driver import Driver
+
+import discord
+
+TOKEN = ""
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
 
 def url_to_soup_lxml(url : str) -> BeautifulSoup:
     page = urlopen(url)
@@ -16,6 +17,8 @@ def url_to_soup_lxml(url : str) -> BeautifulSoup:
     return BeautifulSoup(html, features = "lxml")
 
 def setup() -> tuple:
+    print("Setting up")
+
     #Creating Teams and Drivers
     teams = create_teams()
     drivers = create_drivers(teams)
@@ -79,7 +82,7 @@ def extract_team_details(soup_str : str, regex_extraction_pattern : str, strip_p
     extract = re.findall(regex_extraction_pattern, soup_str)[0]
     return extract.strip(strip_pattern)
 
-def curr_season_results() -> None:
+def curr_season_results() -> str:
     print("Current Season Results")
 
     # Reading from the site
@@ -91,9 +94,9 @@ def curr_season_results() -> None:
 
     #dropping useless columns
     race_df = race_df.drop(["Unnamed: 0", "Unnamed: 7"], axis = 1)
-    print(race_df.to_markdown())
+    return race_df.to_markdown()
 
-def prev_season_result(year : int) -> None:
+def prev_season_result(year : int) -> str:
     race_results_soup = url_to_soup_lxml(SEASON_URL.format(year))
     race_results = race_results_soup.find_all('table')[0]
     race_df = pd.read_html(StringIO(str(race_results)), header=[0])[0]
@@ -104,20 +107,18 @@ def prev_season_result(year : int) -> None:
 
     race_df = race_df.drop(["Unnamed: 0", "Unnamed: 7"], axis = 1)
     print(f"Race Results of {year}")
-    print(race_df.to_markdown())
+    return race_df.to_markdown()
     
-
-def driver_standings(drivers : list[Driver]) -> None:
+def driver_standings(drivers : list[Driver]) -> str:
     drivers_df = pd.DataFrame([driver.__dict__ for driver in drivers])
     drivers_df['pts'] = drivers_df['pts'].astype(int)
 
     drivers_df_sorted = drivers_df.sort_values(by="pts", ascending = False)
 
     print("Current Driver Standings")
-    print(drivers_df_sorted.to_markdown())
-    pass
+    return drivers_df_sorted.to_markdown()
 
-def constructors_standings(teams : list[Team]) -> None:
+def constructors_standings(teams : list[Team]) -> str:
     constructors_df = pd.DataFrame([team.__dict__ for team in teams])
     constructors_df = constructors_df.drop(["team_color", "drivers"], axis = 1)
 
@@ -126,13 +127,30 @@ def constructors_standings(teams : list[Team]) -> None:
     constructors_df_sorted = constructors_df.sort_values(by="points", ascending = False)
 
     print("Current Constructors Standings")
-    print(constructors_df_sorted.to_markdown())
-    pass
+    return constructors_df_sorted.to_markdown()
+
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!!Season'):
+        await message.channel.send("```" + curr_season_results() + "```")
+
+    elif message.content.startswith('!!Drivers'):
+        await message.channel.send("```" + driver_standings(drivers) + "```")
+
+    elif message.content.startswith('!!Constructors'):
+        await message.channel.send("```" + constructors_standings(teams) + "```")
+
+    elif message.content.startswith('!!OldConstructors'):
+        await message.channel.send("```" + constructors_standings(teams) + "```")
+        
+teams, drivers = setup()
 
 if __name__ == "__main__":
-    teams, drivers = setup()
-
-    curr_season_results()
-    driver_standings(drivers)
-    constructors_standings(teams)
-    prev_season_result(2023)
+    client.run(TOKEN)

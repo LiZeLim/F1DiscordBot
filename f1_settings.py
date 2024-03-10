@@ -1,3 +1,11 @@
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import pandas as pd
+from io import StringIO
+import re
+from tabulate import tabulate
+from datetime import datetime
+
 #URLS
 TEAMS_URL = "https://www.formula1.com/en/teams.html"
 SEASON_URL = "https://www.formula1.com/en/results.html/{}/races.html"
