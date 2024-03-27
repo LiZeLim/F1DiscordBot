@@ -145,6 +145,7 @@ async def on_message(message):
     if message.author == client.user:
         return
     
+    #TODO Make a user guide for the discord bot containing the possible commands, etc
     if message.content.startswith("!F1") or message.content.startswith("!f1"):
         pass
 
