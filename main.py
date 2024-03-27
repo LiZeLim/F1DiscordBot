@@ -89,16 +89,23 @@ def curr_season_results() -> str:
     race_results_soup = url_to_soup_lxml(SEASON_URL.format(datetime.now().year))
 
     # finding the results table from the html webpage
-    race_results = race_results_soup.find_all('table')[0]
+    race_results = race_results_soup.find_all("table")[0]
     race_df = pd.read_html(StringIO(str(race_results)), header=[0])[0]
 
     #dropping useless columns
     race_df = race_df.drop(["Unnamed: 0", "Unnamed: 7"], axis = 1)
     return race_df.to_markdown()
 
+""" 
+Currently Discord has a message character limit, therefore we can split into 2 messages:
+First message for the 1st half of the season
+Second message for the 2nd half of the season
+ """
+# TODO split results matrix into 2 sections, so that the bot can print it out into 2 different messages.
 def prev_season_result(year : int) -> str:
     race_results_soup = url_to_soup_lxml(SEASON_URL.format(year))
-    race_results = race_results_soup.find_all('table')[0]
+    print("URL", SEASON_URL.format(year))
+    race_results = race_results_soup.find_all("table")[0]
     race_df = pd.read_html(StringIO(str(race_results)), header=[0])[0]
 
     if race_df.empty:
@@ -111,7 +118,7 @@ def prev_season_result(year : int) -> str:
     
 def driver_standings(drivers : list[Driver]) -> str:
     drivers_df = pd.DataFrame([driver.__dict__ for driver in drivers])
-    drivers_df['pts'] = drivers_df['pts'].astype(int)
+    drivers_df["pts"] = drivers_df["pts"].astype(int)
 
     drivers_df_sorted = drivers_df.sort_values(by="pts", ascending = False)
 
@@ -131,25 +138,51 @@ def constructors_standings(teams : list[Team]) -> str:
 
 @client.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f"We have logged in as {client.user}")
 
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
+    
+    if message.content.startswith("!F1") or message.content.startswith("!f1"):
+        pass
 
-    if message.content.startswith('!!Season'):
+    elif message.content.startswith("!Season") or message.content.startswith("!season"):
         await message.channel.send("```" + curr_season_results() + "```")
 
-    elif message.content.startswith('!!Drivers'):
+    elif message.content.startswith("!Drivers") or message.content.startswith("!drivers"):
         await message.channel.send("```" + driver_standings(drivers) + "```")
 
-    elif message.content.startswith('!!Constructors'):
+    elif message.content.startswith("!Constructors") or message.content.startswith("!constructors"):
         await message.channel.send("```" + constructors_standings(teams) + "```")
 
-    elif message.content.startswith('!!OldConstructors'):
-        await message.channel.send("```" + constructors_standings(teams) + "```")
+    elif message.content.startswith("!OldConstructors") or message.content.startswith("!oldConstructors"):
+        channel = message.channel
         
+        """ Message checking validity of the message, given that it can be numeric and that we able to retrieve that year """
+        def check(year : str) -> bool:
+            return year.channel == channel
+
+        try:
+            year = await client.wait_for('message', timeout=10, check=check)
+
+            if not year.content.isnumeric():
+                await message.channel.send("Please enter a valid year in the format of YYYY")
+                return
+
+            year = int(year.content)
+            curr_year = int(datetime.date.today().strftime("%Y"))
+
+            if year < 1950 or year > curr_year:
+                await message.channel.send(f"Invalid Year, please enter a year from 1950 till {curr_year}")
+                return
+            
+        except asyncio.TimeoutError:
+            await channel.send("Timeout")
+        else:
+            await message.channel.send("```" + prev_season_result(year) + "```")
+
 teams, drivers = setup()
 
 if __name__ == "__main__":
