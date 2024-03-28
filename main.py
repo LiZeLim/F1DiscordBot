@@ -1,6 +1,7 @@
 from f1_settings import *
 from f1_team import Team
 from f1_driver import Driver
+import numpy as np
 
 import discord
 
@@ -101,8 +102,7 @@ Currently Discord has a message character limit, therefore we can split into 2 m
 First message for the 1st half of the season
 Second message for the 2nd half of the season
  """
-# TODO split results matrix into 2 sections, so that the bot can print it out into 2 different messages.
-def prev_season_result(year : int) -> str:
+def prev_season_result(year : int) -> tuple: #tuple of str first half of season, str second half of season
     race_results_soup = url_to_soup_lxml(SEASON_URL.format(year))
     print("URL", SEASON_URL.format(year))
     race_results = race_results_soup.find_all("table")[0]
@@ -113,8 +113,11 @@ def prev_season_result(year : int) -> str:
         return
 
     race_df = race_df.drop(["Unnamed: 0", "Unnamed: 7"], axis = 1)
+
+    first_half_season_df, second_half_season_df = np.array_split(race_df, 2)
+
     print(f"Race Results of {year}")
-    return race_df.to_markdown()
+    return first_half_season_df.to_markdown(), second_half_season_df.to_markdown()
     
 def driver_standings(drivers : list[Driver]) -> str:
     drivers_df = pd.DataFrame([driver.__dict__ for driver in drivers])
@@ -160,6 +163,8 @@ async def on_message(message):
 
     elif message.content.startswith("!OldConstructors") or message.content.startswith("!oldConstructors"):
         channel = message.channel
+
+        await message.channel.send("Please enter year")
         
         """ Message checking validity of the message, given that it can be numeric and that we able to retrieve that year """
         def check(year : str) -> bool:
@@ -182,7 +187,9 @@ async def on_message(message):
         except asyncio.TimeoutError:
             await channel.send("Timeout")
         else:
-            await message.channel.send("```" + prev_season_result(year) + "```")
+            first_half_markdown, second_half_markdown = prev_season_result(year)
+            await message.channel.send("1st half of season\n" + "```" + first_half_markdown + "```")
+            await message.channel.send("2nd half of season\n" +  "```" + second_half_markdown + "```")
 
 teams, drivers = setup()
 

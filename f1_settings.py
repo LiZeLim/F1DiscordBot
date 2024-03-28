@@ -5,7 +5,6 @@ from io import StringIO
 import re
 from tabulate import tabulate
 from datetime import datetime
-import datetime
 import asyncio
 
 #URLS
