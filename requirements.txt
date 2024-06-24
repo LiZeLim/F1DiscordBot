@@ -4,3 +4,4 @@ discord.py
 beautifulsoup4
 pandas
 tabulate
+lxml
