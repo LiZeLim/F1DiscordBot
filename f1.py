@@ -22,7 +22,7 @@ class F1:
 
         # Reading from the site
         race_results_soup = self.url_to_soup_lxml(
-            SEASON_URL.format(datetime.now().year)
+            SEASON_URL.format(datetime.datetime.now().year)
         )
 
         # finding the results table from the html webpage
@@ -105,9 +105,9 @@ class F1:
             list(zip(drivers_first_name, drivers_last_name, drivers_pts, drivers_team)),
             columns=["First name", "Last name", "PTS", "Team"],
         )
-        drivers_df["pts"] = drivers_df["pts"].astype(int)
+        drivers_df["PTS"] = drivers_df["PTS"].astype(int)
 
-        drivers_df_sorted = drivers_df.sort_values(by="pts", ascending=False)
+        drivers_df_sorted = drivers_df.sort_values(by="PTS", ascending=False)
 
         print("Current Driver Standings")
         return drivers_df_sorted.to_markdown()

@@ -51,7 +51,7 @@ async def on_message(message):
         await message.channel.send("```" + f.constructors_standings() + "```")
 
     elif message.content.startswith("!PrevSeason") or message.content.startswith(
-        "!prevSeason"
+        "!prevseason"
     ):
         channel = message.channel
 
