@@ -1,6 +1,6 @@
 ## F1 Discord Bot
 
-Invite bot:https://discord.com/oauth2/authorize?client_id=1216315254502588467&permissions=274877917184&integration_type=0&scope=bot
+[**Invite bot**](https://discord.com/oauth2/authorize?client_id=1216315254502588467&permissions=274877917184&integration_type=0&scope=bot)
 
 **Commands (all start with !):**
 
