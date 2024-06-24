@@ -1,5 +1,13 @@
-Hello,
-To use this discord bot program, please ensure that you create a new application to register your discord bot token.
-Once you have token, open the main.py file and paste the token into the TOKEN constant variable.
+## F1 Discord Bot
 
-If you are confused, please read this guide https://www.writebots.com/discord-bot-token/
+Invite bot:https://discord.com/oauth2/authorize?client_id=1216315254502588467&permissions=274877917184&integration_type=0&scope=bot
+
+**Commands (all start with !):**
+
+* !F1/f1: Latest Race Results
+* !Season/season: Current Season Standings
+* !Drivers/drivers: Driver Championship Standings
+* !Constructors/constructors: Constructor Standings
+* !PrevSeason/prevseason (Coming Soon!): Previous Season Standings
+
+**Tip:** Use commands in any text channel for F1 updates. 
