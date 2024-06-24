@@ -1,17 +1,11 @@
-import numpy as np
 from dotenv import load_dotenv
 import os
 import discord
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-import pandas as pd
-from io import StringIO
-import re
-from tabulate import tabulate
 import datetime
 import asyncio
 
 from f1 import F1
+from f1_settings import *
 
 load_dotenv()
 
@@ -35,7 +29,7 @@ async def on_message(message):
 
     # TODO Make a user guide for the discord bot containing the possible commands, etc
     if message.content.startswith("!F1") or message.content.startswith("!f1"):
-        pass
+        await message.channel.send(COMMAND_LIST)
 
     elif message.content.startswith("!Season") or message.content.startswith("!season"):
         await message.channel.send("```" + f.curr_season_results() + "```")

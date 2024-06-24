@@ -1,3 +1,16 @@
+COMMAND_LIST = """
+## F1 Discord Bot
+**Commands (all start with !):**
+
+* !F1/f1: Latest Race Results
+* !Season/season: Current Season Standings
+* !Drivers/drivers: Driver Championship Standings
+* !Constructors/constructors: Constructor Standings
+* !PrevSeason/prevseason (Coming Soon!): Previous Season Standings
+
+**Tip:** Use commands in any text channel for F1 updates.
+"""
+
 # URLS
 TEAMS_URL = "https://www.formula1.com/en/teams"
 SEASON_URL = "https://www.formula1.com/en/results.html/{}/races.html"
