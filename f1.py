@@ -1,7 +1,5 @@
 import numpy as np
 from f1_settings import *
-from f1_team import Team
-from f1_driver import Driver
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import pandas as pd

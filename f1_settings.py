@@ -6,7 +6,7 @@ COMMAND_LIST = """
 * !Season/season: Current Season Standings
 * !Drivers/drivers: Driver Championship Standings
 * !Constructors/constructors: Constructor Standings
-* !PrevSeason/prevseason (Coming Soon!): Previous Season Standings
+* !PrevSeason/prevseason: Previous Season Standings
 
 **Tip:** Use commands in any text channel for F1 updates.
 """
